@@ -35,3 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Crash logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Logs
+*.log
+
+
