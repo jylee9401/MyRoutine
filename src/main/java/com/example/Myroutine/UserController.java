@@ -5,14 +5,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Controller
 public class UserController {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository,
+                          BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/signup")
@@ -24,8 +28,10 @@ public class UserController {
     public String signup(@RequestParam String username,
                          @RequestParam String password) {
 
-        User user = new User(username, password);
-            userRepository.save(user);
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(username, encodedPassword);
+
+        userRepository.save(user);
 
             return "redirect:/";
         }
@@ -45,19 +51,12 @@ public class UserController {
             return "redirect:/login";
         }
 
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             return "redirect:/login";
         }
 
         session.setAttribute("loginUser", user);
 
-        if(user == null) {
-            return "redirect:/login";
-        }
-
-        if (!user.getPassword().equals(password)){
-            return "redirect:/login";
-        }
 
         return "redirect:/";
     }
