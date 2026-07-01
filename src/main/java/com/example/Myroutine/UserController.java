@@ -29,11 +29,11 @@ public class UserController {
                          @RequestParam String password) {
 
         String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(username, encodedPassword);
 
+        User user = new User(username, encodedPassword);
         userRepository.save(user);
 
-            return "redirect:/";
+            return "redirect:/login";
         }
     @GetMapping("/login")
     public String loginForm() {
@@ -45,16 +45,20 @@ public class UserController {
                         @RequestParam String password,
                         HttpSession session) {
 
+        System.out.println("로그인 시도 username = " + username);
+        
         User user = userRepository.findByUsername(username);
 
         if (user == null) {
+            System.out.println("유저없음");
             return "redirect:/login";
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
+            System.out.println("비밀번호 불일치");
             return "redirect:/login";
         }
-
+        System.out.println("로그인 성공");
         session.setAttribute("loginUser", user);
 
 

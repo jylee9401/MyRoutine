@@ -30,17 +30,19 @@ public class RoutineController {
         User loginUser = (User) session.getAttribute("loginUser");
         model.addAttribute("loginUser", loginUser);
 
+        if (loginUser == null) {
+            model.addAttribute("routines", java.util.Collections.emptyList());
+            model.addAttribute("completionRate", 0);
+            return "index";
+        }
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             model.addAttribute("routines", routineService.searchByKeyword(keyword, loginUser));
         } else {
             model.addAttribute("routines", routineService.findByStatus(status, loginUser));
         }
-        //model.addAttribute("keyword", keyword);
-        if (loginUser == null) {
-            model.addAttribute("completionRate", 0);
-        } else {
-            model.addAttribute("completionRate", routineService.getCompletionRate(loginUser));
-        }
+
+        model.addAttribute("completionRate", routineService.getCompletionRate(loginUser));
         return "index";
     }
 
