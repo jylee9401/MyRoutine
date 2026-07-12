@@ -30,11 +30,22 @@ public class UserController {
 
         String encodedPassword = passwordEncoder.encode(password);
 
+        //이미 존재하는 아이디인지 확인
+        User existingUser = userRepository.findByUsername(username);
+
+        if(existingUser != null) {
+            return "redirect:/signup?error=duplicate";
+        }
+
+        // 비밀번호 암호화
+        String encodePassword = passwordEncoder.encode(password);
+
         User user = new User(username, encodedPassword);
         userRepository.save(user);
 
             return "redirect:/login";
         }
+
     @GetMapping("/login")
     public String loginForm() {
         return "login";

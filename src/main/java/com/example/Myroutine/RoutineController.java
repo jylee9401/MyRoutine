@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 
@@ -52,7 +53,8 @@ public class RoutineController {
                              @RequestParam
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                              LocalDate date,
-                             HttpSession session) {
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
         User loginUser = (User) session.getAttribute("loginUser");
 
         if (loginUser == null) {
@@ -60,6 +62,12 @@ public class RoutineController {
         }
 
         routineService.addRoutine( title, description, date, loginUser);
+
+        redirectAttributes.addFlashAttribute(
+                "message",
+                "✅ 루틴이 추가되었습니다."
+        );
+
         return "redirect:/";
     }
 
